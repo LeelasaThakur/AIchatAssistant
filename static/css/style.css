@@ -1,0 +1,557 @@
+/* =========================
+   RESET + BASE
+========================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* LIGHT MODE COLORS */
+    --bg-main: #fff;
+    --bg-sidebar: #fff;
+    --bg-input: #fff;
+    --bg-hover: #ffebf9;
+
+    --border: #fd90dc;
+    --text-main: #fd218e;
+    --text-muted: #b77ca8;
+
+    --accent: #ffd5ef;
+    --user: #fff;
+
+    --download-btn: #fff;
+    --download-btn-hover: #ffebf9;
+    --icon-btn-bg: transparent;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-main);
+    color: var(--text-main);
+    height: 100vh;
+    overflow: hidden;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* DARK MODE OVERRIDES */
+body.dark-mode, :root.dark-mode {
+    --bg-main: #181720;
+    --bg-sidebar: #232137;
+    --bg-input: #232135;
+    --bg-hover: #322144;
+
+    --border: #3a2c4a;
+    --text-main: #fd90dc;
+    --text-muted: #b399c7;
+
+    --accent: #9138a6;
+    --user: #271c30;
+
+    --download-btn: #232137;
+    --download-btn-hover: #322144;
+    --icon-btn-bg: transparent;
+}
+
+/* =========================
+   APP LAYOUT
+========================= */
+.app-container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    transition: all 0.3s;
+}
+
+/* Sidebar expands/collapses (collapsible) */
+.sidebar {
+    width: 280px;
+    min-width: 220px;
+    max-width: 350px;
+    background: var(--bg-sidebar);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--border);
+    transition: background 0.2s, border-color 0.2s, transform 0.3s, width 0.3s;
+    z-index: 90;
+    position: relative;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+    border: none;
+    pointer-events: none;
+}
+
+/* Keep the toggle button always visible */
+.sidebar-header {
+    padding: 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.toggle-sidebar-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    z-index: 100;
+    transition: background 0.2s, color 0.2s;
+}
+
+.toggle-sidebar-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+/* Ensure new chat button is hidden when sidebar is collapsed */
+.sidebar.collapsed .new-chat-btn {
+    display: none !important;
+}
+
+/* Optionally hide history list as well if desired */
+.sidebar.collapsed .history-list {
+    display: none !important;
+}
+
+.new-chat-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.new-chat-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+
+.history-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.history-item {
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s;
+}
+
+.history-item:hover {
+    background: var(--bg-hover);
+}
+
+.history-item.active {
+    background: var(--accent);
+}
+
+.history-item-title {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.history-item-date {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.delete-chat-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    opacity: 0;
+    transition: color 0.2s;
+}
+
+.history-item:hover .delete-chat-btn {
+    opacity: 1;
+    color: var(--text-main);
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+/* Main content expands when sidebar is collapsed */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    transition: margin 0.3s, width 0.3s;
+}
+
+.sidebar.collapsed + .main-content {
+    margin-left: 0;
+    width: 100vw;
+}
+
+/* =========================
+   HEADER
+========================= */
+.chat-header {
+    height: 56px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-main);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.chat-title {
+    font-weight: 500;
+    color: var(--text-main);
+    flex: 1;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* =========================
+   DOWNLOAD & DARK MODE BUTTONS - HEADER */
+#downloadBtn, 
+#darkModeToggle, 
+#userAvatarBtn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--download-btn);
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    margin-left: 0;
+    margin-right: 0;
+}
+
+#userAvatarBtn img,
+#userAvatarBtn svg {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+}
+
+#downloadBtn:hover, 
+#darkModeToggle:hover, 
+#userAvatarBtn:hover {
+    background: var(--download-btn-hover);
+    color: var(--text-main);
+    border-color: var(--border);
+}
+
+/* Theme specific */
+body.dark-mode #downloadBtn,
+body.dark-mode #darkModeToggle,
+body.dark-mode #userAvatarBtn {
+    background: var(--download-btn);
+    color: var(--text-main);
+    border-color: var(--border);
+}
+
+/* Alignment utility for header buttons */
+.header-actions > * {
+    margin-left: 4px;
+    margin-right: 0;
+    vertical-align: middle;
+}
+
+/* =========================
+   CHAT MESSAGES
+========================= */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    background: var(--bg-main);
+    transition: background 0.2s;
+}
+
+.message {
+    margin-bottom: 20px;
+}
+
+.message-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    gap: 12px;
+}
+
+.user-message .message-wrapper {
+    justify-content: flex-end;
+}
+
+.message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--user);
+    border: 1px solid var(--border);
+}
+
+.user-message .message-avatar {
+    background: var(--user);
+}
+
+.assistant-message .message-avatar {
+    background: var(--accent);
+}
+
+.message-content {
+    background: var(--user);
+    padding: 14px 16px;
+    border-radius: 12px;
+    line-height: 1.6;
+    position: relative;
+    color: var(--text-main);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.01);
+    border: 1px solid var(--border);
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.assistant-message .message-content {
+    background: var(--accent);
+    color: var(--text-main);
+}
+
+/* Timestamp */
+.message-timestamp {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-align: right;
+    margin-top: 4px;
+}
+
+/* =========================
+   MARKDOWN / CODE
+========================= */
+.message-content pre {
+    background: var(--bg-hover);
+    color: var(--text-main);
+    padding: 12px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 12px 0;
+    border: 1px solid var(--border);
+    font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.message-content code {
+    background: var(--bg-hover);
+    color: var(--text-main);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Fira Mono', 'Consolas', 'Menlo', monospace;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* =========================
+   COPY BUTTON
+========================= */
+.copy-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    font-size: 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.copy-btn:hover {
+    color: var(--text-main);
+}
+
+/* =========================
+   INPUT AREA
+========================= */
+.input-area {
+    padding: 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-main);
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.input-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 8px;
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.user-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-main);
+    resize: none;
+    outline: none;
+    padding: 8px;
+    font-size: 15px;
+    transition: color 0.2s;
+}
+
+.send-btn {
+    background: var(--accent);
+    border: none;
+    color: #222;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, color 0.2s;
+}
+
+body.dark-mode .send-btn {
+    color: #fff;
+    background: var(--accent);
+}
+
+.send-btn:hover:not(:disabled) {
+    filter: brightness(1.1);
+}
+
+.send-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.voice-btn {
+    background: #ff6b6b;
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.voice-btn:hover {
+    filter: brightness(1.1);
+}
+
+.voice-btn.listening {
+    animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* =========================
+   WELCOME + PROMPTS
+========================= */
+.welcome-message {
+    text-align: center;
+    margin-top: 80px;
+    color: var(--text-muted);
+}
+
+.quick-prompts {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.prompt-btn {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.prompt-btn:hover {
+    background: var(--accent);
+    color: #222;
+}
+
+body.dark-mode .prompt-btn:hover {
+    color: #fff;
+    background: var(--accent);
+}
+
+.attach-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
+}
+
+.attach-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-main);
+}
+ 
+/* Transition for theme change and sidebar/main-content transitions */
+body, 
+body * {
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
