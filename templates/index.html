@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
 </head>
 <body>
     <div class="app-container">
@@ -15,10 +16,8 @@
             <div class="sidebar-header">
                 <button class="new-chat-btn" id="newChatBtn">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    New Chat
+                       </svg>
+                       New Chat
                 </button>
             </div>
             <div class="history-list" id="historyList">
@@ -38,7 +37,10 @@
                 </button>
                 <div class="chat-title">AI Chat Assistant</div>
                 <div class="header-actions">
-                    <button id="darkModeToggle" class="icon-btn" title="Toggle dark mode">☀️</button>
+                    <button id="darkModeToggle" class="icon-btn" title="Toggle dark mode">
+                        <img src="{{ url_for('static', filename='images/icon.ico') }}" alt="Dark mode">
+                    </button>
+                
                     <button id="downloadBtn" class="icon-btn" title="Download chat">⬇️</button>
                 </div>
             </div>
@@ -131,18 +133,20 @@
         let lastFailedMessage = null;
 
         // Dark Mode
-        const isDarkMode = localStorage.getItem('darkMode') === 'true';
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            darkModeToggle.textContent = '☀️';
-        }
+        const modeIcon = document.getElementById('modeIcon');
 
-        darkModeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-mode');
-            const isDark = document.body.classList.contains('dark-mode');
-            localStorage.setItem('darkMode', isDark);
-            darkModeToggle.textContent = isDark ? '☀️' : '🌙';
-        });
+const isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+if (isDarkMode) {
+    document.body.classList.add('dark-mode');
+}
+
+darkModeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+
+    const isDark = document.body.classList.contains('dark-mode');
+    localStorage.setItem('darkMode', isDark);
+});
 
         // Voice recognition removed
 
@@ -436,17 +440,29 @@
         }
 
         function copyMessage(text, button) {
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = button.textContent;
-                button.textContent = '✓';
-                button.classList.add('copied');
 
-                setTimeout(() => {
-                    button.textContent = originalText;
-                    button.classList.remove('copied');
-                }, 2000);
-            });
-        }
+// Fallback method (works everywhere)
+const textarea = document.createElement('textarea');
+textarea.value = text;
+document.body.appendChild(textarea);
+textarea.select();
+
+try {
+    document.execCommand('copy');
+    button.textContent = '✓';
+    button.classList.add('copied');
+
+    setTimeout(() => {
+        button.textContent = '📋';
+        button.classList.remove('copied');
+    }, 2000);
+
+} catch (err) {
+    alert("Copy failed");
+}
+
+document.body.removeChild(textarea);
+}
 
         function escapeHtml(text) {
             const div = document.createElement('div');
