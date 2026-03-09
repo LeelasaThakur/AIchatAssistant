@@ -8,8 +8,9 @@ import uuid
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)  # Generate a secret key for sessionsgit 
+app = Flask(__name__,template_folder='.')
+app.secret_key = secrets.token_hex(16) 
+ # Generate a secret key for sessionsgit 
 
 # Configure SambaNova API
 SAMBANOVA_API_KEY = os.getenv("SAMBANOVA_API_KEY", "939ebbeb-e6f4-402b-9b37-91e6c43dc926")
