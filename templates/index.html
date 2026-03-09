@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
 </head>
 <body>
     <div class="app-container">
@@ -15,9 +14,11 @@
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <button class="new-chat-btn" id="newChatBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                       </svg>
-                       New Chat
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Chat
                 </button>
             </div>
             <div class="history-list" id="historyList">
@@ -29,19 +30,41 @@
         <div class="main-content">
             <!-- Header -->
             <div class="chat-header">
-                <button class="toggle-sidebar-btn" id="toggleSidebarBtn" title="Collapse sidebar" aria-label="Collapse sidebar">
-                    <!-- Improved collapse icon: chevron left (collapsing/expanding sidebar) -->
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="15 18 9 12 15 6"></polyline>
+                <button class="toggle-sidebar-btn" id="toggleSidebarBtn" title="Toggle sidebar" aria-label="Toggle sidebar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
                 <div class="chat-title">AI Chat Assistant</div>
                 <div class="header-actions">
                     <button id="darkModeToggle" class="icon-btn" title="Toggle dark mode">
-                        <img src="{{ url_for('static', filename='images/icon.ico') }}" alt="Dark mode">
+                        <!-- Sun icon for light mode (will switch to moon in dark mode) -->
+                        <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        <!-- Moon icon for dark mode (hidden by default) -->
+                        <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
                     </button>
                 
-                    <button id="downloadBtn" class="icon-btn" title="Download chat">⬇️</button>
+                    <button id="downloadBtn" class="icon-btn" title="Download chat">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -71,7 +94,7 @@
             <div class="input-area">
                 <div class="input-wrapper">
                     <button class="attach-btn" id="attachBtn" title="Attach file">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
                         </svg>
                     </button>
@@ -87,10 +110,8 @@
                     
                     <span id="charCount" class="char-count">0/1000</span>
                     
-                    <!-- Voice input button removed -->
-                    
                     <button id="sendBtn" class="send-btn" title="Send message" disabled>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="22" y1="2" x2="11" y2="13"></line>
                             <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                         </svg>
@@ -123,7 +144,6 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const darkModeToggle = document.getElementById('darkModeToggle');
         const charCount = document.getElementById('charCount');
-        // Voice button removed
 
         const MAX_CHARS = 1000;
 
@@ -132,23 +152,33 @@
         let currentChatId = null;
         let lastFailedMessage = null;
 
-        // Dark Mode
-        const modeIcon = document.getElementById('modeIcon');
+        // Dark Mode with icon switching
+        const sunIcon = darkModeToggle.querySelector('.sun-icon');
+        const moonIcon = darkModeToggle.querySelector('.moon-icon');
 
-const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
 
-if (isDarkMode) {
-    document.body.classList.add('dark-mode');
-}
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+        }
 
-darkModeToggle.addEventListener('click', () => {
-    document.body.classList.toggle('dark-mode');
+        darkModeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
 
-    const isDark = document.body.classList.contains('dark-mode');
-    localStorage.setItem('darkMode', isDark);
-});
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
 
-        // Voice recognition removed
+            // Toggle icons
+            if (isDark) {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        });
 
         // Initialize
         window.addEventListener('load', () => {
@@ -164,16 +194,6 @@ darkModeToggle.addEventListener('click', () => {
         // Toggle Sidebar
         toggleSidebarBtn.addEventListener('click', () => {
             sidebar.classList.toggle('collapsed');
-
-            // Toggle chevron direction for collapse/expand
-            const svg = toggleSidebarBtn.querySelector('svg');
-            if (sidebar.classList.contains('collapsed')) {
-                // Set to chevron right
-                svg.innerHTML = '<polyline points="9 18 15 12 9 6"></polyline>';
-            } else {
-                // Set to chevron left
-                svg.innerHTML = '<polyline points="15 18 9 12 15 6"></polyline>';
-            }
         });
 
         // Character Counter
@@ -312,7 +332,7 @@ darkModeToggle.addEventListener('click', () => {
         function clearChatDisplay() {
             chatMessages.innerHTML = `
                 <div class="welcome-message">
-                    <h2>👋 Welcome!</h2>
+                    <h2>Welcome!</h2>
                     <p>How can I help you today?</p>
                     <div class="quick-prompts">
                         <button class="prompt-btn" onclick="usePrompt('Explain quantum computing in simple terms')">
@@ -397,10 +417,9 @@ darkModeToggle.addEventListener('click', () => {
             const messageWrapper = document.createElement('div');
             messageWrapper.className = 'message-wrapper';
 
-            // Instead of avatar, display sender as text label
             const senderLabel = document.createElement('div');
             senderLabel.className = 'message-sender';
-            senderLabel.textContent = isUser ? 'User' : 'Assistant';
+            senderLabel.textContent = isUser ? 'You' : 'Assistant';
 
             const content = document.createElement('div');
             content.className = 'message-content';
@@ -412,12 +431,17 @@ darkModeToggle.addEventListener('click', () => {
                 content.innerHTML = escapeHtml(message);
             }
 
-            // Add copy button for assistant messages
+            // Add copy button for assistant messages with iOS-style icon
             if (!isUser) {
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'copy-btn';
-                copyBtn.textContent = '📋';
                 copyBtn.title = 'Copy message';
+                copyBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                `;
                 copyBtn.onclick = () => copyMessage(message, copyBtn);
                 content.appendChild(copyBtn);
             }
@@ -440,29 +464,36 @@ darkModeToggle.addEventListener('click', () => {
         }
 
         function copyMessage(text, button) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
 
-// Fallback method (works everywhere)
-const textarea = document.createElement('textarea');
-textarea.value = text;
-document.body.appendChild(textarea);
-textarea.select();
+            try {
+                document.execCommand('copy');
+                button.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                `;
+                button.classList.add('copied');
 
-try {
-    document.execCommand('copy');
-    button.textContent = '✓';
-    button.classList.add('copied');
+                setTimeout(() => {
+                    button.innerHTML = `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    `;
+                    button.classList.remove('copied');
+                }, 2000);
 
-    setTimeout(() => {
-        button.textContent = '📋';
-        button.classList.remove('copied');
-    }, 2000);
+            } catch (err) {
+                alert("Copy failed");
+            }
 
-} catch (err) {
-    alert("Copy failed");
-}
-
-document.body.removeChild(textarea);
-}
+            document.body.removeChild(textarea);
+        }
 
         function escapeHtml(text) {
             const div = document.createElement('div');
@@ -484,7 +515,6 @@ document.body.removeChild(textarea);
             const wrapper = document.createElement('div');
             wrapper.className = 'message-wrapper';
 
-            // Sender label instead of avatar
             const senderLabel = document.createElement('div');
             senderLabel.className = 'message-sender';
             senderLabel.textContent = 'Assistant';
@@ -518,7 +548,6 @@ document.body.removeChild(textarea);
             const wrapper = document.createElement('div');
             wrapper.className = 'message-wrapper';
 
-            // Sender label instead of avatar
             const senderLabel = document.createElement('div');
             senderLabel.className = 'message-sender';
             senderLabel.textContent = 'Assistant';
