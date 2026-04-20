@@ -53,7 +53,7 @@ def get_user_conversation():
     return all_convos[user_id]
 
 def set_user_conversation(history):
-    """
+    """ 
     Sets the conversation list of the current session user.
     """
     user_id = get_user_id()
