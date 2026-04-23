@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session
 import openai
 import os
 from dotenv import load_dotenv
@@ -8,9 +8,9 @@ import uuid
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__,template_folder='.')
-app.secret_key = secrets.token_hex(16) 
- # Generate a secret key for sessionsgit 
+# FIXED: Use standard Flask template folder
+app = Flask(__name__)  # Will look for templates/index.html
+app.secret_key = secrets.token_hex(16)
 
 # Configure SambaNova API
 SAMBANOVA_API_KEY = os.getenv("SAMBANOVA_API_KEY", "939ebbeb-e6f4-402b-9b37-91e6c43dc926")
@@ -49,7 +49,7 @@ def get_user_conversation():
     all_convos = get_session_conversations()
     if user_id not in all_convos:
         all_convos[user_id] = []
-        session['multi_conversations'] = all_convos  # must "write back" in Flask session
+        session['multi_conversations'] = all_convos
     return all_convos[user_id]
 
 def set_user_conversation(history):
@@ -74,7 +74,7 @@ def chat():
         user_message = data.get('message', '')
 
         if not user_message.strip():
-            return jsonify({'error': 'Empty message'}), 400
+            return jsonify({'error': 'Empty message', 'success': False}), 400
 
         # Retrieve conversation history for this user/session
         conversation_history = get_user_conversation()
@@ -136,4 +136,11 @@ def health():
     return jsonify({'status': 'healthy', 'model': MODEL_NAME})
 
 if __name__ == '__main__':
+    print("=" * 50)
+    print("🚀 Starting Flask App")
+    print("=" * 50)
+    print(f"📁 Template folder: {app.template_folder}")
+    print(f"🤖 Model: {MODEL_NAME}")
+    print(f"🌐 Server: http://localhost:5000")
+    print("=" * 50)
     app.run(debug=True, host='0.0.0.0', port=5000)
