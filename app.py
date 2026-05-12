@@ -149,13 +149,6 @@ def health():
         'api_key': SAMBANOVA_API_KEY[:10] + '...' if SAMBANOVA_API_KEY else 'Not set'
     })
 
+# REPLACE WITH:
 if __name__ == '__main__':
-    print("=" * 60)
-    print("🚀 Starting AI Chat Assistant")
-    print("=" * 60)
-    print(f"📁 Template folder: {app.template_folder}")
-    print(f"🤖 Model: {MODEL_NAME}")
-    print(f"🔑 API Key: {SAMBANOVA_API_KEY[:15]}..." if SAMBANOVA_API_KEY else "❌ No API Key")
-    print(f"🌐 Server: http://localhost:5000")
-    print("=" * 60)
     app.run(debug=True, host='0.0.0.0', port=5000)
