@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, session
-import openai
+from sambanova import SambaNova
 import os
 from dotenv import load_dotenv
 import secrets
@@ -8,17 +8,19 @@ import uuid
 # Load environment variables
 load_dotenv()
 
-# FIXED: Use standard Flask template folder
-app = Flask(__name__)  # Will look for templates/index.html
+# Flask app setup
+app = Flask(__name__)
 app.secret_key = secrets.token_hex(16)
 
-# Configure SambaNova API
-SAMBANOVA_API_KEY = os.getenv("SAMBANOVA_API_KEY", "939ebbeb-e6f4-402b-9b37-91e6c43dc926")
+# Configure SambaNova API - FIXED
+SAMBANOVA_API_KEY = os.getenv("SAMBANOVA_API_KEY", "dccd4b12-74e5-4996-9b22-deecd566404f")
+if not SAMBANOVA_API_KEY:
+    raise ValueError("SAMBANOVA_API_KEY is not set in environment or .env file")
 SAMBANOVA_BASE_URL = "https://api.sambanova.ai/v1"
-MODEL_NAME = "Llama-3.3-Swallow-70B-Instruct-v0.4"
+MODEL_NAME = "DeepSeek-V3.1"
 
-# Initialize OpenAI client with SambaNova endpoint
-client = openai.OpenAI(
+# Initialize SambaNova client - CORRECTED
+client = SambaNova(
     api_key=SAMBANOVA_API_KEY,
     base_url=SAMBANOVA_BASE_URL,
 )
@@ -73,6 +75,8 @@ def chat():
         data = request.get_json()
         user_message = data.get('message', '')
 
+        print(f"📩 Received message: {user_message}")
+
         if not user_message.strip():
             return jsonify({'error': 'Empty message', 'success': False}), 400
 
@@ -93,16 +97,19 @@ def chat():
         # Add the current user input
         messages.append({"role": "user", "content": user_message})
 
-        # Generate response using SambaNova API
+        print(f"🤖 Calling SambaNova API with {len(messages)} messages...")
+
+        # Generate response using SambaNova API - FIXED
         response = client.chat.completions.create(
             model=MODEL_NAME,
             messages=messages,
-            temperature=0.7,
-            top_p=0.9,
-            max_tokens=500
+            temperature=0.1,
+            top_p=0.1
         )
 
         assistant_message = response.choices[0].message.content
+
+        print(f"✅ Got response: {assistant_message[:100]}...")
 
         # Update current user's conversation history
         conversation_history.append(user_message)
@@ -115,7 +122,9 @@ def chat():
         })
 
     except Exception as e:
-        print(f"Error generating response: {e}")
+        print(f"❌ Error generating response: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'error': f'An error occurred: {str(e)}',
             'success': False
@@ -128,19 +137,25 @@ def clear_chat():
     all_convos = get_session_conversations()
     all_convos[user_id] = []
     session['multi_conversations'] = all_convos
+    print(f"🗑️ Cleared chat for user: {user_id}")
     return jsonify({'success': True, 'message': 'Chat cleared'})
 
 @app.route('/health')
 def health():
     """Health check endpoint"""
-    return jsonify({'status': 'healthy', 'model': MODEL_NAME})
+    return jsonify({
+        'status': 'healthy', 
+        'model': MODEL_NAME,
+        'api_key': SAMBANOVA_API_KEY[:10] + '...' if SAMBANOVA_API_KEY else 'Not set'
+    })
 
 if __name__ == '__main__':
-    print("=" * 50)
-    print("🚀 Starting Flask App")
-    print("=" * 50)
+    print("=" * 60)
+    print("🚀 Starting AI Chat Assistant")
+    print("=" * 60)
     print(f"📁 Template folder: {app.template_folder}")
     print(f"🤖 Model: {MODEL_NAME}")
+    print(f"🔑 API Key: {SAMBANOVA_API_KEY[:15]}..." if SAMBANOVA_API_KEY else "❌ No API Key")
     print(f"🌐 Server: http://localhost:5000")
-    print("=" * 50)
+    print("=" * 60)
     app.run(debug=True, host='0.0.0.0', port=5000)
