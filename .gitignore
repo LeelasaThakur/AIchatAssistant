@@ -4,3 +4,8 @@ __pycache__/
 venv/
 *.pyc
 .ipynb_checkpoints/
+instance/
+logs/
+uploads/
+.env
+__pycache__/

@@ -23,20 +23,27 @@ bcrypt.init_app(app)
 csrf.init_app(app)
 
 # Ensure folders exist
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-os.makedirs(os.path.join(app.config['BASE_DIR'], 'instance'), exist_ok=True)
-
+if os.environ.get("VERCEL"):
+    os.makedirs("/tmp/uploads", exist_ok=True)
+else:
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 # Configure Production Logging
-if not app.debug:
+
+if not app.debug and not os.environ.get("VERCEL"):
     os.makedirs('logs', exist_ok=True)
-    file_handler = RotatingFileHandler('logs/chat_assistant.log', maxBytes=5 * 1024 * 1024, backupCount=5)
+
+    file_handler = RotatingFileHandler(
+        'logs/chat_assistant.log',
+        maxBytes=5 * 1024 * 1024,
+        backupCount=5
+    )
+
     file_handler.setFormatter(logging.Formatter(
         '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
     ))
+
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('AI Chat Assistant started successfully')
 
 # Initialize Groq client safely
 client = None
