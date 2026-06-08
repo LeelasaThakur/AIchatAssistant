@@ -2,49 +2,43 @@ import os
 from pypdf import PdfReader
 import docx
 
-def allowed_file(filename, allowed_extensions):
-    """Checks if a file extension is in the whitelist"""
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-def extract_text_from_file(file_path):
+def allowed_file(filename: str, allowed_extensions: set) -> bool:
+    """Return True if the filename has an extension in the whitelist."""
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in allowed_extensions
+
+
+def extract_text_from_file(file_path: str) -> str | None:
     """
-    Extracts raw text content from TXT, PDF, and DOCX files.
-    Returns None if the file is an image or unsupported format.
+    Extract raw text from TXT, PDF, and DOCX files.
+    Returns None for images or unsupported formats.
     """
     ext = os.path.splitext(file_path)[1].lower()
-    
+
     try:
-        if ext == '.txt':
-            # Try reading as UTF-8 first, fallback to Latin-1
+        if ext == ".txt":
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    return f.read()
+                with open(file_path, "r", encoding="utf-8") as fh:
+                    return fh.read()
             except UnicodeDecodeError:
-                with open(file_path, 'r', encoding='latin-1') as f:
-                    return f.read()
-                    
-        elif ext == '.pdf':
+                with open(file_path, "r", encoding="latin-1") as fh:
+                    return fh.read()
+
+        elif ext == ".pdf":
             reader = PdfReader(file_path)
-            text = []
-            for page in reader.pages:
-                page_text = page.extract_text()
-                if page_text:
-                    text.append(page_text)
-            return "\n".join(text)
-            
-        elif ext in ('.doc', '.docx'):
-            doc = docx.Document(file_path)
-            text = [p.text for p in doc.paragraphs]
-            # Also extract text from tables if any
-            for table in doc.tables:
+            pages = [page.extract_text() for page in reader.pages if page.extract_text()]
+            return "\n".join(pages)
+
+        elif ext in (".doc", ".docx"):
+            document = docx.Document(file_path)
+            parts = [p.text for p in document.paragraphs]
+            for table in document.tables:
                 for row in table.rows:
-                    row_text = [cell.text for cell in row.cells]
-                    text.append(" | ".join(row_text))
-            return "\n".join(text)
-            
-    except Exception as e:
-        print(f"Error parsing file {file_path}: {e}")
-        return f"[Error extracting text from file: {str(e)}]"
-        
-    return None
+                    parts.append(" | ".join(cell.text for cell in row.cells))
+            return "\n".join(parts)
+
+    except Exception as exc:
+        print(f"Error parsing file {file_path}: {exc}")
+        return f"[Error extracting text: {exc}]"
+
+    return None  # image or unsupported type
