@@ -264,7 +264,11 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
+        csrf_token = session.get("csrf_token")
         session.clear()
+        if csrf_token:
+            session["csrf_token"] = csrf_token
+            
         session["user_id"] = new_user.id
         session.permanent = True
 
@@ -293,7 +297,11 @@ def login():
 
         user = User.query.filter_by(username=username).first()
         if user and user.check_password(password):
+            csrf_token = session.get("csrf_token")
             session.clear()
+            if csrf_token:
+                session["csrf_token"] = csrf_token
+                
             session["user_id"] = user.id
             session.permanent = True
             app.logger.info("Logged in user: %s", username)
@@ -311,7 +319,10 @@ def login():
 def logout():
     user = get_current_user()
     username = user.username if user else "unknown"
+    csrf_token = session.get("csrf_token")
     session.clear()
+    if csrf_token:
+        session["csrf_token"] = csrf_token
     app.logger.info("Logged out user: %s", username)
     return jsonify({"success": True, "message": "Logged out successfully"})
 
