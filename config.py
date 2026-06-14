@@ -1,4 +1,6 @@
 import os
+import re
+from datetime import timedelta
 from dotenv import load_dotenv
 
 # Load environmental variables from .env (no-op in production where vars are injected)
@@ -7,9 +9,7 @@ load_dotenv()
 # ---------------------------------------------------------------------------
 # Environment detection
 # ---------------------------------------------------------------------------
-# VERCEL env var is automatically set to "1" by the Vercel runtime.
 IS_VERCEL = bool(os.environ.get("VERCEL"))
-# Optional explicit override: set FLASK_ENV=production in any environment.
 IS_PRODUCTION = IS_VERCEL or os.environ.get("FLASK_ENV") == "production"
 
 
@@ -20,10 +20,7 @@ def _build_database_uri() -> str:
     Priority order:
       1. DATABASE_URL env var  (set this on Vercel / any cloud host)
       2. Explicit Postgres components via PG_* vars
-      3. Local SQLite fallback (development only – never used on Vercel)
-
-    Vercel injects DATABASE_URL automatically when a Postgres integration
-    (e.g. Vercel Postgres / Neon) is attached to the project.
+      3. Local SQLite fallback (development only)
 
     IMPORTANT: SQLAlchemy 2.x requires "postgresql+psycopg2://" not
     the legacy "postgres://" scheme that some providers still emit.
@@ -31,8 +28,6 @@ def _build_database_uri() -> str:
     raw_url = os.environ.get("DATABASE_URL", "")
 
     if raw_url:
-        # Heroku / Neon / Supabase historically emit "postgres://…"
-        # SQLAlchemy 2.x only accepts "postgresql+psycopg2://…"
         if raw_url.startswith("postgres://"):
             raw_url = raw_url.replace("postgres://", "postgresql+psycopg2://", 1)
         elif raw_url.startswith("postgresql://") and "+psycopg2" not in raw_url:
@@ -65,13 +60,34 @@ def _build_database_uri() -> str:
     return f"sqlite:///{sqlite_path}"
 
 
+# ---------------------------------------------------------------------------
+# Password complexity
+# ---------------------------------------------------------------------------
+PASSWORD_MIN_LENGTH = 8
+PASSWORD_RULES = [
+    (r"[A-Z]", "at least one uppercase letter"),
+    (r"[a-z]", "at least one lowercase letter"),
+    (r"[0-9]", "at least one digit"),
+]
+
+
+def validate_password(password: str) -> str | None:
+    """Return an error message if password doesn't meet complexity requirements, else None."""
+    if len(password) < PASSWORD_MIN_LENGTH:
+        return f"Password must be at least {PASSWORD_MIN_LENGTH} characters"
+    for pattern, description in PASSWORD_RULES:
+        if not re.search(pattern, password):
+            return f"Password must contain {description}"
+    return None
+
+
 class Config:
     """Central Flask application configuration."""
 
     # ------------------------------------------------------------------
     # Security
     # ------------------------------------------------------------------
-    SECRET_KEY: str = os.environ.get("SECRET_KEY") or os.urandom(24).hex()
+    SECRET_KEY: str = os.environ.get("SECRET_KEY") or os.urandom(32).hex()
 
     # ------------------------------------------------------------------
     # Database
@@ -79,20 +95,20 @@ class Config:
     SQLALCHEMY_DATABASE_URI: str = _build_database_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
 
-    # Connection-pool settings tuned for serverless (each invocation is
-    # short-lived; we want connections to be recycled quickly).
-    SQLALCHEMY_ENGINE_OPTIONS: dict = {
-        "pool_pre_ping": True,       # drop stale connections silently
-        "pool_recycle": 300,         # recycle every 5 minutes
-        "pool_size": 5,
-        "max_overflow": 10,
-    } if IS_PRODUCTION else {}
+    SQLALCHEMY_ENGINE_OPTIONS: dict = (
+        {
+            "pool_pre_ping": True,
+            "pool_recycle": 300,
+            "pool_size": 5,
+            "max_overflow": 10,
+        }
+        if IS_PRODUCTION
+        else {}
+    )
 
     # ------------------------------------------------------------------
     # File uploads
     # ------------------------------------------------------------------
-    # On Vercel, /tmp is the ONLY writable directory.
-    # On local dev, store uploads next to the project.
     UPLOAD_FOLDER: str = (
         "/tmp/uploads"
         if IS_VERCEL
@@ -102,13 +118,14 @@ class Config:
     ALLOWED_EXTENSIONS: set = {"txt", "pdf", "docx", "png", "jpg", "jpeg", "gif"}
 
     # ------------------------------------------------------------------
-    # Session cookies
+    # Session
     # ------------------------------------------------------------------
     SESSION_COOKIE_SECURE: bool = (
         os.environ.get("SESSION_COOKIE_SECURE", "False").lower() in ("true", "1")
     )
     SESSION_COOKIE_HTTPONLY: bool = True
     SESSION_COOKIE_SAMESITE: str = "Lax"
+    PERMANENT_SESSION_LIFETIME = timedelta(hours=24)
 
     # ------------------------------------------------------------------
     # Groq / LLM
@@ -121,3 +138,13 @@ class Config:
     # ------------------------------------------------------------------
     MAX_PROMPT_CHARS: int = 4_000
     MAX_DOC_CHARS: int = 12_000
+    MAX_CONTEXT_MESSAGES: int = 15
+
+    # ------------------------------------------------------------------
+    # Rate limits (Flask-Limiter format strings)
+    # ------------------------------------------------------------------
+    RATE_LIMIT_LOGIN: str = "5 per minute"
+    RATE_LIMIT_REGISTER: str = "3 per minute"
+    RATE_LIMIT_UPLOAD: str = "10 per minute"
+    RATE_LIMIT_MESSAGE: str = "20 per minute"
+    RATE_LIMIT_DEFAULT: str = "60 per minute"

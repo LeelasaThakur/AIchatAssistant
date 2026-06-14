@@ -1,11 +1,47 @@
+# Python
 __pycache__/
-.env
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
 .venv/
 venv/
-*.pyc
-.ipynb_checkpoints/
-instance/
-logs/
-uploads/
+env/
+
+# Environment variables
 .env
-__pycache__/
+.env.local
+.env.production
+
+# Database
+instance/
+*.db
+*.sqlite3
+
+# Uploads & logs
+uploads/
+logs/
+
+# Migrations (auto-generated)
+migrations/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
