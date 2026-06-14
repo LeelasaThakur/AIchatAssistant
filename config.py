@@ -47,14 +47,18 @@ def _build_database_uri() -> str:
             f"@{pg_host}:{pg_port}/{pg_db}"
         )
 
-    if IS_PRODUCTION:
+    if IS_PRODUCTION and not IS_VERCEL:
         raise RuntimeError(
             "No database configured for production. "
             "Set DATABASE_URL (or PG_HOST / PG_USER / PG_PASSWORD / PG_DATABASE) "
-            "in your Vercel environment variables."
+            "in your environment variables."
         )
 
-    # Local development: SQLite
+    # Local development or Vercel without DB: SQLite
+    if IS_VERCEL:
+        # Vercel filesystem is read-only except for /tmp
+        return "sqlite:////tmp/chat_assistant.db"
+    
     base_dir = os.path.abspath(os.path.dirname(__file__))
     sqlite_path = os.path.join(base_dir, "instance", "chat_assistant.db")
     return f"sqlite:///{sqlite_path}"
