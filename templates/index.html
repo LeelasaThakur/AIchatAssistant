@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <meta name="description" content="AI Chat Assistant — Intelligent conversations powered by AI">
-<title>Leelasa AI — Chat Assistant</title>
+<title>lol.ai — Chat Assistant</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1106,7 +1106,7 @@ textarea:focus:not(:focus-visible) { outline: none; }
   <div class="auth-card" role="dialog" aria-label="Authentication">
     <div class="auth-logo">
       <div class="auth-logo-icon" aria-hidden="true">L</div>
-      <h1>Leelasa AI</h1>
+      <h1>lol.ai</h1>
       <p>Your intelligent conversation partner</p>
     </div>
 
@@ -1178,7 +1178,7 @@ textarea:focus:not(:focus-visible) { outline: none; }
     <div class="sidebar-header">
       <div class="sidebar-logo">
         <div class="sidebar-logo-icon" aria-hidden="true">L</div>
-        <span class="sidebar-logo-text">Leelasa AI</span>
+        <span class="sidebar-logo-text">lol.ai</span>
       </div>
       <button class="sidebar-toggle" onclick="App.ui.toggleSidebar(false)" aria-label="Close sidebar" title="Close sidebar">✕</button>
     </div>
@@ -1220,7 +1220,7 @@ textarea:focus:not(:focus-visible) { outline: none; }
     <!-- Chat header -->
     <div class="chat-header">
       <button class="header-menu-btn" onclick="App.ui.toggleSidebar(true)" aria-label="Open menu">☰</button>
-      <div class="chat-header-title" id="chat-title">Leelasa AI</div>
+      <div class="chat-header-title" id="chat-title">lol.ai</div>
       <div class="chat-header-actions">
         <button class="header-action" onclick="App.ui.openExportModal()" aria-label="Export chat" title="Export chat">📥</button>
         <button class="header-action" onclick="App.ui.openSettings()" aria-label="Settings" title="Settings">⚙</button>
@@ -1249,7 +1249,7 @@ textarea:focus:not(:focus-visible) { outline: none; }
           <button class="remove-file" onclick="App.upload.clear()" aria-label="Remove attached file">✕</button>
         </div>
         <div class="input-container" id="input-container">
-          <textarea id="message-input" rows="1" placeholder="Message Leelasa AI…" aria-label="Type your message" maxlength="4000" onkeydown="App.chat.handleInputKey(event)" oninput="App.ui.autoResize(this); App.ui.updateCharCount();"></textarea>
+          <textarea id="message-input" rows="1" placeholder="Message lol.ai…" aria-label="Type your message" maxlength="4000" onkeydown="App.chat.handleInputKey(event)" oninput="App.ui.autoResize(this); App.ui.updateCharCount();"></textarea>
           <div class="input-actions">
             <input type="file" id="file-input" hidden onchange="App.upload.handleFile(this.files[0])">
             <button class="input-action-btn" onclick="document.getElementById('file-input').click()" aria-label="Attach file" title="Attach file">📎</button>
@@ -1942,7 +1942,7 @@ const App = {
             App.state.activeChat = null;
             App.state.messages = [];
             App.ui.showEmptyState();
-            document.getElementById('chat-title').textContent = 'Leelasa AI';
+            document.getElementById('chat-title').textContent = 'lol.ai';
           }
           App.ui.renderSidebar();
           App.ui.toast('Chat deleted', 'success');
@@ -2026,7 +2026,7 @@ const App = {
         App.state.messages = [];
         App.ui.renderSidebar();
         App.ui.showEmptyState();
-        document.getElementById('chat-title').textContent = 'Leelasa AI';
+        document.getElementById('chat-title').textContent = 'lol.ai';
         App.ui.toast('All chats cleared', 'success');
         App.ui.closeSettings();
       };
